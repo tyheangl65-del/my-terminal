@@ -354,16 +354,6 @@
       gap: 8px;
     }
 
-    .api-key-field {
-      background: #161b26;
-      border: 1px solid #202736;
-      color: #fff;
-      padding: 6px 8px;
-      border-radius: 4px;
-      font-size: 10px;
-      outline: none;
-    }
-
     .chat-controls {
       display: flex;
       gap: 6px;
@@ -603,7 +593,6 @@
       </div>
 
       <div class="ai-input-wrapper">
-        <input type="password" id="api-key" class="api-key-field" placeholder="Paste Gemini API Key Here...">
         <div class="chat-controls">
           <input type="text" id="chat-input" class="chat-input" placeholder="Analyze market, deploy bot..." onkeydown="if(event.key==='Enter') handleSend()">
           <button class="send-btn" onclick="handleSend()"><i class="fa-solid fa-paper-plane"></i></button>
@@ -616,6 +605,9 @@
   <!-- TRADINGVIEW WIDGET SCRIPT -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script type="text/javascript">
+    // EMBEDDED API KEY
+    const API_KEY = "AQ.Ab8RN6LyrhxffOdKW6Li1_vKnlgmffmyAFyyMYVDiiG5YbxlkA";
+
     let currentTradingViewSymbol = "OANDA:XAUUSD";
     let currentSymbolName = "XAUUSD";
     let currentTimeframe = "1";
@@ -673,16 +665,12 @@
     }
 
     async function handleSend() {
-      const apiKey = document.getElementById('api-key').value.trim();
+      const apiKey = API_KEY.trim();
       const inputEl = document.getElementById('chat-input');
       const chatBox = document.getElementById('ai-chat-box');
       const userText = inputEl.value.trim();
 
       if (!userText) return;
-      if (!apiKey) {
-        alert("Please paste your Google Gemini API key to run ZpKingPro AI.");
-        return;
-      }
 
       // Add user message to UI
       chatBox.innerHTML += `<div class="msg-bubble msg-user">${userText}</div>`;
@@ -691,7 +679,7 @@
 
       // Add loading indicator
       const loadingId = 'load-' + Date.now();
-      chatBox.innerHTML += `<div class="msg-bubble msg-ai" id="${loadingId}"><i class="fa-solid fa-spinner fa-spin"></i> Finding active model & processing ${currentSymbolName}...</div>`;
+      chatBox.innerHTML += `<div class="msg-bubble msg-ai" id="${loadingId}"><i class="fa-solid fa-spinner fa-spin"></i> Processing ${currentSymbolName}...</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
@@ -702,12 +690,10 @@
         if (listRes.ok) {
           const listData = await listRes.json();
           if (listData.models && listData.models.length > 0) {
-            // Find models that support generateContent
             const supported = listData.models.filter(m => 
               m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent')
             );
             
-            // Prefer flash models, otherwise pick first supported model
             const flashModel = supported.find(m => m.name.includes('flash'));
             if (flashModel) {
               targetModelName = flashModel.name;
