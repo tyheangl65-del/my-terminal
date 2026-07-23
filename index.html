@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Pro Terminal</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: #131722; color: #d1d4dc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; height: 100vh; overflow: hidden; }
+    
+    /* Top Bar */
+    .topbar { height: 42px; background: #1e222d; border-bottom: 1px solid #2a2e39; display: flex; align-items: center; padding: 0 16px; justify-content: space-between; font-size: 13px; }
+    .badge { background: #2962ff; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+    .metrics { display: flex; gap: 20px; }
+    .metric-item span { color: #787b86; }
+
+    /* Main Container Layout */
+    .container { display: flex; height: calc(100vh - 42px); }
+
+    /* Left Sidebar Watchlist */
+    .sidebar { width: 260px; background: #131722; border-right: 1px solid #2a2e39; display: flex; flex-direction: column; }
+    .sidebar-title { padding: 12px; font-weight: bold; border-bottom: 1px solid #2a2e39; font-size: 12px; color: #787b86; text-transform: uppercase; }
+    .watchlist-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #1e222d; cursor: pointer; transition: 0.2s; }
+    .watchlist-item:hover { background: #1e222d; }
+    .symbol-name { font-weight: bold; color: #ffffff; }
+    .symbol-sub { font-size: 11px; color: #787b86; }
+
+    /* Center Chart Viewport */
+    .chart-container { flex: 1; height: 100%; position: relative; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Metrics Bar -->
+  <div class="topbar">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="badge">PRO TERMINAL</span>
+      <strong>XAUUSD / Gold</strong>
+    </div>
+    <div class="metrics">
+      <div class="metric-item"><span>Market Status:</span> <strong style="color: #00e676;">LIVE</strong></div>
+      <div class="metric-item"><span>Hosting:</span> <strong>GitHub (Free Forever)</strong></div>
+    </div>
+  </div>
+
+  <!-- Main Terminal Layout -->
+  <div class="container">
+    
+    <!-- Sidebar / Watchlist -->
+    <div class="sidebar">
+      <div class="sidebar-title">Main Watchlist</div>
+      
+      <div class="watchlist-item" onclick="loadSymbol('OANDA:XAUUSD')">
+        <div>
+          <div class="symbol-name">XAUUSD</div>
+          <div class="symbol-sub">Gold / US Dollar</div>
+        </div>
+      </div>
+
+      <div class="watchlist-item" onclick="loadSymbol('BINANCE:BTCUSDT')">
+        <div>
+          <div class="symbol-name">BTCUSDT</div>
+          <div class="symbol-sub">Bitcoin</div>
+        </div>
+      </div>
+
+      <div class="watchlist-item" onclick="loadSymbol('BINANCE:ETHUSDT')">
+        <div>
+          <div class="symbol-name">ETHUSDT</div>
+          <div class="symbol-sub">Ethereum</div>
+        </div>
+      </div>
+
+      <div class="watchlist-item" onclick="loadSymbol('FX:EURUSD')">
+        <div>
+          <div class="symbol-name">EURUSD</div>
+          <div class="symbol-sub">Euro / US Dollar</div>
+        </div>
+      </div>
+
+      <div class="watchlist-item" onclick="loadSymbol('CAPITALCOM:US100')">
+        <div>
+          <div class="symbol-name">NAS100</div>
+          <div class="symbol-sub">Nasdaq 100 Index</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Viewport -->
+    <div class="chart-container" id="chart_box">
+      <!-- TradingView Widget Script auto-injects here -->
+    </div>
+
+  </div>
+
+  <!-- TradingView Free Widget Engine -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+    let widget;
+
+    function loadSymbol(symbolName) {
+      document.getElementById('chart_box').innerHTML = '<div id="tv_chart"></div>';
+      widget = new TradingView.widget({
+        "autosize": true,
+        "symbol": symbolName,
+        "interval": "15",
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "en",
+        "enable_publishing": false,
+        "allow_symbol_change": true,
+        "container_id": "tv_chart",
+        "hide_side_toolbar": false
+      });
+    }
+
+    // Default chart load
+    loadSymbol('OANDA:XAUUSD');
+  </script>
+</body>
+</html>
