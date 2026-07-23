@@ -307,6 +307,7 @@
       line-height: 1.45;
       font-size: 12px;
       word-break: break-word;
+      white-space: pre-wrap;
     }
 
     .msg-ai {
@@ -367,6 +368,7 @@
     .chat-controls {
       display: flex;
       gap: 6px;
+      align-items: center;
     }
 
     .chat-input {
@@ -381,16 +383,34 @@
     }
     .chat-input:focus { border-color: #3b82f6; }
 
+    .attach-btn {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      color: #9ca3af;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .attach-btn:hover { color: #fff; background: #2d3748; }
+
     .send-btn {
       background: #10b981;
       border: none;
       color: #000;
       font-weight: bold;
-      padding: 0 12px;
+      padding: 8px 12px;
       border-radius: 6px;
       cursor: pointer;
     }
     .send-btn:hover { background: #34d399; }
+
+    .attachment-preview {
+      display: none;
+      font-size: 10px;
+      color: #10b981;
+      align-items: center;
+      gap: 4px;
+    }
   </style>
 </head>
 <body>
@@ -446,19 +466,19 @@
       <div class="symbol-pill">
         <i class="fa-solid fa-chart-line" style="color: #eab308;"></i>
         <span id="active-symbol-title">XAUUSD</span>
-        <span style="font-weight: normal; color: #6b7280; font-size: 10px;">OANDA</span>
+        <span style="font-weight: normal; color: #6b7280; font-size: 10px;" id="active-symbol-exchange">OANDA</span>
         <span class="text-green" id="active-symbol-price">4,124.45</span>
       </div>
 
       <!-- Timeframe selector buttons -->
       <div style="display: flex; gap: 2px; margin-left: 8px;">
-        <button class="tf-btn active" onclick="changeTimeframe('1')">1m</button>
-        <button class="tf-btn" onclick="changeTimeframe('5')">5m</button>
-        <button class="tf-btn" onclick="changeTimeframe('15')">15m</button>
-        <button class="tf-btn" onclick="changeTimeframe('30')">30m</button>
-        <button class="tf-btn" onclick="changeTimeframe('60')">1h</button>
-        <button class="tf-btn" onclick="changeTimeframe('240')">4h</button>
-        <button class="tf-btn" onclick="changeTimeframe('D')">1d</button>
+        <button class="tf-btn active" onclick="changeTimeframe('1', this)">1m</button>
+        <button class="tf-btn" onclick="changeTimeframe('5', this)">5m</button>
+        <button class="tf-btn" onclick="changeTimeframe('15', this)">15m</button>
+        <button class="tf-btn" onclick="changeTimeframe('30', this)">30m</button>
+        <button class="tf-btn" onclick="changeTimeframe('60', this)">1h</button>
+        <button class="tf-btn" onclick="changeTimeframe('240', this)">4h</button>
+        <button class="tf-btn" onclick="changeTimeframe('D', this)">1d</button>
       </div>
 
       <div class="scan-status">
@@ -467,7 +487,7 @@
     </div>
 
     <div class="toolbar-right">
-      <button class="action-btn"><i class="fa-solid fa-robot" style="color:#eab308;"></i> Ask AI</button>
+      <button class="action-btn" onclick="focusChat()"><i class="fa-solid fa-robot" style="color:#eab308;"></i> Ask AI</button>
       <button class="action-btn"><i class="fa-solid fa-arrow-trend-up" style="color:#10b981;"></i> Trade</button>
       <button class="action-btn"><i class="fa-regular fa-bell"></i> Alert</button>
     </div>
@@ -493,7 +513,7 @@
       </div>
       
       <div class="watchlist-list">
-        <div class="watchlist-item active" onclick="loadSymbol('OANDA:XAUUSD', 'XAUUSD', 'Gold', '4,125.70', '-0.11%')">
+        <div class="watchlist-item active" onclick="loadSymbol('OANDA:XAUUSD', 'XAUUSD', 'Gold', '4,125.70', '-0.11%', 'OANDA', this)">
           <div>
             <div class="item-symbol">XAUUSD</div>
             <div class="item-sub">Gold</div>
@@ -504,7 +524,7 @@
           </div>
         </div>
 
-        <div class="watchlist-item" onclick="loadSymbol('BINANCE:BTCUSDT', 'BTCUSDT', 'Bitcoin', '65,628', '-0.95%')">
+        <div class="watchlist-item" onclick="loadSymbol('BINANCE:BTCUSDT', 'BTCUSDT', 'Bitcoin', '65,628', '-0.95%', 'BINANCE', this)">
           <div>
             <div class="item-symbol">BTCUSDT</div>
             <div class="item-sub">Bitcoin</div>
@@ -515,7 +535,7 @@
           </div>
         </div>
 
-        <div class="watchlist-item" onclick="loadSymbol('BINANCE:ETHUSDT', 'ETHUSDT', 'Ethereum', '1,919.85', '-0.58%')">
+        <div class="watchlist-item" onclick="loadSymbol('BINANCE:ETHUSDT', 'ETHUSDT', 'Ethereum', '1,919.85', '-0.58%', 'BINANCE', this)">
           <div>
             <div class="item-symbol">ETHUSDT</div>
             <div class="item-sub">Ethereum</div>
@@ -526,7 +546,7 @@
           </div>
         </div>
 
-        <div class="watchlist-item" onclick="loadSymbol('FX:EURUSD', 'EURUSD', 'Euro / USD', '1.1429', '+0.14%')">
+        <div class="watchlist-item" onclick="loadSymbol('FX:EURUSD', 'EURUSD', 'Euro / USD', '1.1429', '+0.14%', 'FX', this)">
           <div>
             <div class="item-symbol">EURUSD</div>
             <div class="item-sub">Euro / USD</div>
@@ -537,7 +557,7 @@
           </div>
         </div>
 
-        <div class="watchlist-item" onclick="loadSymbol('FX:GBPUSD', 'GBPUSD', 'Pound / USD', '1.3389', '+0.09%')">
+        <div class="watchlist-item" onclick="loadSymbol('FX:GBPUSD', 'GBPUSD', 'Pound / USD', '1.3389', '+0.09%', 'FX', this)">
           <div>
             <div class="item-symbol">GBPUSD</div>
             <div class="item-sub">Pound / USD</div>
@@ -548,7 +568,7 @@
           </div>
         </div>
 
-        <div class="watchlist-item" onclick="loadSymbol('CAPITALCOM:US100', 'NAS100', 'Nasdaq 100', '28,998', '+0.35%')">
+        <div class="watchlist-item" onclick="loadSymbol('CAPITALCOM:US100', 'NAS100', 'Nasdaq 100', '28,998', '+0.35%', 'CAPITALCOM', this)">
           <div>
             <div class="item-symbol">NAS100</div>
             <div class="item-sub">Nasdaq 100</div>
@@ -567,12 +587,12 @@
 
       <!-- Floating Bottom Toolbar -->
       <div class="bottom-dock">
-        <div class="dock-btn"><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis</div>
-        <div class="dock-btn"><i class="fa-solid fa-robot"></i> Bot</div>
+        <div class="dock-btn" onclick="sendQuickPrompt('Analyze current market structure and liquidity levels')"><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis</div>
+        <div class="dock-btn" onclick="sendQuickPrompt('Generate a trade setup with Entry, Stop Loss, and Take Profit')"><i class="fa-solid fa-robot"></i> Bot</div>
         <div class="dock-btn"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
         <div class="dock-btn"><i class="fa-regular fa-newspaper"></i> News</div>
         <div class="dock-divider"></div>
-        <div class="dock-btn"><i class="fa-solid fa-bullseye"></i> Focus AI</div>
+        <div class="dock-btn" onclick="sendQuickPrompt('Perform a full risk check for this setup')"><i class="fa-solid fa-bullseye"></i> Focus AI</div>
         <div class="dock-btn"><i class="fa-solid fa-sliders"></i> Market</div>
       </div>
     </div>
@@ -603,8 +623,13 @@
       </div>
 
       <div class="ai-input-wrapper">
+        <div class="attachment-preview" id="attachment-preview">
+          <i class="fa-solid fa-image"></i> Chart screenshot attached <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="removeAttachment()"></i>
+        </div>
         <input type="password" id="api-key" class="api-key-field" placeholder="Paste Gemini API Key Here...">
         <div class="chat-controls">
+          <input type="file" id="image-input" accept="image/*" style="display:none;" onchange="handleImageAttach(event)">
+          <button class="attach-btn" onclick="document.getElementById('image-input').click()" title="Attach Chart Screenshot"><i class="fa-solid fa-paperclip"></i></button>
           <input type="text" id="chat-input" class="chat-input" placeholder="Analyze market, deploy bot..." onkeydown="if(event.key==='Enter') handleSend()">
           <button class="send-btn" onclick="handleSend()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
@@ -618,8 +643,13 @@
   <script type="text/javascript">
     let currentTradingViewSymbol = "OANDA:XAUUSD";
     let currentSymbolName = "XAUUSD";
+    let currentExchange = "OANDA";
+    let currentPrice = "4,125.70";
+    let currentChange = "-0.11%";
     let currentTimeframe = "1";
+    let attachedImageBase64 = null;
 
+    // Render the TradingView Widget
     function renderChart() {
       document.getElementById('tv_chart_container').innerHTML = '';
       new TradingView.widget({
@@ -638,104 +668,195 @@
       });
     }
 
-    function loadSymbol(tvSymbol, symbolTitle, name, price, change) {
+    // Initialize Chart on load
+    window.onload = function() {
+      renderChart();
+    };
+
+    // Load Symbol from Watchlist
+    function loadSymbol(tvSymbol, symbolTitle, name, price, change, exchange, element) {
       currentTradingViewSymbol = tvSymbol;
       currentSymbolName = symbolTitle;
-      
+      currentExchange = exchange;
+      currentPrice = price;
+      currentChange = change;
+
+      // Update UI elements
       document.getElementById('active-symbol-title').innerText = symbolTitle;
+      document.getElementById('active-symbol-exchange').innerText = exchange;
       document.getElementById('active-symbol-price').innerText = price;
       document.getElementById('ai-symbol-tag').innerText = symbolTitle;
       document.getElementById('ai-welcome-symbol').innerText = symbolTitle;
 
-      renderChart();
-    }
-
-    function changeTimeframe(tf) {
-      currentTimeframe = tf;
-      document.getElementById('ai-tf-tag').innerText = tf + (tf === 'D' ? '' : 'm');
-      
-      const buttons = document.querySelectorAll('.tf-btn');
-      buttons.forEach(btn => btn.classList.remove('active'));
-      if (window.event && window.event.target) {
-        window.event.target.classList.add('active');
+      // Update active state in watchlist UI
+      if(element) {
+        document.querySelectorAll('.watchlist-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
       }
 
       renderChart();
     }
 
-    // Initial Load
-    renderChart();
+    // Change Timeframe
+    function changeTimeframe(tf, btn) {
+      currentTimeframe = tf;
+      
+      // Translate TF for UI tag
+      let tfText = tf === '240' ? '4h' : tf === '60' ? '1h' : tf === 'D' ? '1d' : tf + 'm';
+      document.getElementById('ai-tf-tag').innerText = tfText;
 
-    // AI Messaging System
+      if(btn) {
+        document.querySelectorAll('.tf-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+      }
+
+      renderChart();
+    }
+
+    function focusChat() {
+      document.getElementById('chat-input').focus();
+    }
+
+    // Handle Screenshot Image Attachment
+    function handleImageAttach(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          attachedImageBase64 = e.target.result.split(',')[1];
+          document.getElementById('attachment-preview').style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeAttachment() {
+      attachedImageBase64 = null;
+      document.getElementById('image-input').value = '';
+      document.getElementById('attachment-preview').style.display = 'none';
+    }
+
+    // Fetch Live Candle/OHLC context dynamically for AI prompt
+    async function getMarketContext() {
+      let liveContext = `Active Symbol: ${currentSymbolName}\nExchange: ${currentExchange}\nTimeframe: ${currentTimeframe}m\nLast Price: ${currentPrice}\nDaily Change: ${currentChange}\n`;
+
+      // Fetch live OHLC for Crypto pairs if selected
+      if (currentSymbolName.includes("BTC") || currentSymbolName.includes("ETH")) {
+        try {
+          let intervalStr = currentTimeframe === '240' ? '4h' : currentTimeframe === '60' ? '1h' : currentTimeframe === 'D' ? '1d' : currentTimeframe + 'm';
+          let res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${currentSymbolName}&interval=${intervalStr}&limit=10`);
+          let klines = await res.json();
+          if (Array.isArray(klines)) {
+            liveContext += `\nRecent 10 Candlesticks (OHLCV):\n`;
+            klines.forEach(c => {
+              let time = new Date(c[0]).toISOString().slice(11, 16);
+              liveContext += `[${time}] Open: ${c[1]}, High: ${c[2]}, Low: ${c[3]}, Close: ${c[4]}, Vol: ${parseFloat(c[5]).toFixed(2)}\n`;
+            });
+          }
+        } catch(e) {
+          console.warn("Could not fetch Binance OHLC:", e);
+        }
+      }
+
+      return liveContext;
+    }
+
     function sendQuickPrompt(promptText) {
       document.getElementById('chat-input').value = promptText;
       handleSend();
     }
 
+    // Send Message to Gemini API
     async function handleSend() {
-      const apiKey = document.getElementById('api-key').value.trim();
       const inputEl = document.getElementById('chat-input');
+      const apiKeyEl = document.getElementById('api-key');
       const chatBox = document.getElementById('ai-chat-box');
+
       const userText = inputEl.value.trim();
+      const apiKey = apiKeyEl.value.trim();
 
       if (!userText) return;
+
       if (!apiKey) {
-        alert("Please paste your Google Gemini API key to run ZpKingPro AI.");
+        appendMessage("System", "Please paste your Gemini API Key in the field below first.", "msg-ai");
         return;
       }
 
-      // Add user message
-      chatBox.innerHTML += `<div class="msg-bubble msg-user">${userText}</div>`;
+      // Display User Message
+      appendMessage("You", userText, "msg-user");
       inputEl.value = '';
-      chatBox.scrollTop = chatBox.scrollHeight;
 
-      // Add loading indicator
-      const loadingId = 'load-' + Date.now();
-      chatBox.innerHTML += `<div class="msg-bubble msg-ai" id="${loadingId}"><i class="fa-solid fa-spinner fa-spin"></i> ZpKingPro AI is processing ${currentSymbolName}...</div>`;
-      chatBox.scrollTop = chatBox.scrollHeight;
+      // Display Loading Bubble
+      const loadingBubble = appendMessage("ZpKingPro AI", "Analyzing live chart & market structure...", "msg-ai");
 
-      // Candidate models for auto-fallback
-      const modelCandidates = [
-        'gemini-3.5-flash',
-        'gemini-3.1-flash-lite',
-        'gemini-2.5-flash',
-        'gemini-2.0-flash',
-        'gemini-1.5-flash'
-      ];
-      let success = false;
-      let lastErrorMessage = '';
+      // Prepare Chart & Market Context
+      const marketContext = await getMarketContext();
+      
+      const systemInstruction = `You are ZpKingPro AI, an elite institutional crypto and forex technical analyst specializing in Smart Money Concepts (SMC), Fair Value Gaps (FVG), Liquidity Sweeps, and Order Flow.
+Use the provided live market context and candle data to give crisp, precise, and highly actionable analysis. Format with bold headers and bullet points.`;
 
-      for (const model of modelCandidates) {
-        try {
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{ text: `You are ZpKingPro AI, an expert ICT/SMC trading terminal assistant. The user is currently viewing ${currentSymbolName} on a ${currentTimeframe} timeframe. User Query: ${userText}` }]
-              }]
-            })
-          });
+      const userPrompt = `LIVE CHART CONTEXT:\n${marketContext}\n\nUSER QUESTION: ${userText}`;
 
-          const data = await response.json();
+      // Build Gemini API payload
+      let contentsParts = [{ text: userPrompt }];
 
-          if (response.ok && data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-            document.getElementById(loadingId).innerText = data.candidates[0].content.parts[0].text;
-            success = true;
-            break;
-          } else {
-            lastErrorMessage = data.error?.message || `Status ${response.status} on ${model}`;
+      if (attachedImageBase64) {
+        contentsParts.unshift({
+          inline_data: {
+            mime_type: "image/png",
+            data: attachedImageBase64
           }
-        } catch (err) {
-          lastErrorMessage = err.message;
+        });
+      }
+
+      const payload = {
+        contents: [{ parts: contentsParts }],
+        system_instruction: { parts: [{ text: systemInstruction }] }
+      };
+
+      try {
+        // Primary model: gemini-2.5-flash
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+          let aiReply = data.candidates[0].content.parts[0].text;
+          loadingBubble.innerHTML = formatMarkdown(aiReply);
+        } else if (data.error) {
+          loadingBubble.innerHTML = `<span style="color:#ef4444;">API Error: ${data.error.message}</span>`;
+        } else {
+          loadingBubble.innerHTML = "Unable to process chart query. Please try again.";
         }
+      } catch (err) {
+        loadingBubble.innerHTML = `<span style="color:#ef4444;">Connection Error: ${err.message}</span>`;
       }
 
-      if (!success) {
-        document.getElementById(loadingId).innerText = `Error: ${lastErrorMessage}`;
-      }
+      // Reset image attachment
+      removeAttachment();
+    }
 
+    function appendMessage(sender, text, cssClass) {
+      const chatBox = document.getElementById('ai-chat-box');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg-bubble ${cssClass}`;
+      msgDiv.innerHTML = text;
+      chatBox.appendChild(msgDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
+      return msgDiv;
+    }
+
+    // Simple Markdown Formatter
+    function formatMarkdown(text) {
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code style="background:#1f2937; padding:2px 4px; border-radius:3px;">$1</code>')
+        .replace(/\n/g, '<br>');
     }
   </script>
 </body>
