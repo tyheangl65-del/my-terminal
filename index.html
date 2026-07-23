@@ -3,138 +3,694 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pro Terminal + AI</title>
+  <title>ZpKingPro Terminal</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: #131722; color: #d1d4dc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; overflow: hidden; }
-    
-    /* Top Bar */
-    .topbar { height: 42px; background: #1e222d; border-bottom: 1px solid #2a2e39; display: flex; align-items: center; padding: 0 16px; justify-content: space-between; font-size: 13px; }
-    .badge { background: #2962ff; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+    body {
+      background-color: #0b0e14;
+      color: #9ea4b0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      font-size: 12px;
+      user-select: none;
+    }
 
-    /* Main Container */
-    .container { display: flex; height: calc(100vh - 42px); }
+    /* --- TOP HEADER NAVIGATION --- */
+    .header-top {
+      height: 38px;
+      background: #11151f;
+      border-bottom: 1px solid #1a202c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+    }
 
-    /* Left Watchlist Sidebar */
-    .sidebar-left { width: 220px; background: #131722; border-right: 1px solid #2a2e39; display: flex; flex-direction: column; }
-    .sidebar-title { padding: 12px; font-weight: bold; border-bottom: 1px solid #2a2e39; font-size: 11px; color: #787b86; text-transform: uppercase; }
-    .watchlist-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #1e222d; cursor: pointer; }
-    .watchlist-item:hover { background: #1e222d; }
-    .symbol-name { font-weight: bold; color: #ffffff; }
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, #eab308, #ca8a04);
+      color: #000;
+      font-weight: 900;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .plan-badge {
+      background: #1a202c;
+      color: #d1d5db;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .upgrade-btn {
+      background: #d97706;
+      color: #fff;
+      border: none;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .top-metrics {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.1;
+    }
+
+    .metric-label { font-size: 9px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-value { font-weight: 600; color: #d1d5db; font-size: 11px; }
+    .text-green { color: #10b981; }
+    .text-red { color: #ef4444; }
+    .text-yellow { color: #f59e0b; }
+
+    .signal-pill {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    /* --- SECONDARY TOOLBAR --- */
+    .toolbar-sub {
+      height: 36px;
+      background: #0d1117;
+      border-bottom: 1px solid #1a202c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+    }
+
+    .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+    .symbol-pill {
+      background: #161b26;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tf-btn {
+      background: transparent;
+      border: none;
+      color: #6b7280;
+      padding: 3px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tf-btn:hover, .tf-btn.active { color: #fff; background: #1f2937; }
+
+    .scan-status {
+      background: #141a24;
+      color: #f59e0b;
+      border: 1px solid #2d2613;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    .action-btn {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      color: #d1d5db;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+    }
+    .action-btn:hover { background: #2d3748; color: #fff; }
+
+    /* --- MAIN LAYOUT CONTAINER --- */
+    .main-container {
+      display: flex;
+      height: calc(100vh - 74px);
+    }
+
+    /* Far Left Icon Bar */
+    .icon-sidebar {
+      width: 44px;
+      background: #0d1117;
+      border-right: 1px solid #1a202c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+      gap: 18px;
+    }
+
+    .icon-btn {
+      color: #6b7280;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .icon-btn:hover, .icon-btn.active { color: #eab308; }
+
+    /* Watchlist Sidebar */
+    .sidebar-watchlist {
+      width: 210px;
+      background: #0f131c;
+      border-right: 1px solid #1a202c;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .watchlist-header {
+      padding: 10px;
+      border-bottom: 1px solid #1a202c;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+
+    .watchlist-list { flex: 1; overflow-y: auto; }
+
+    .watchlist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-bottom: 1px solid #141923;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .watchlist-item:hover, .watchlist-item.active { background: #161c28; }
+
+    .item-symbol { font-weight: bold; color: #f3f4f6; font-size: 12px; }
+    .item-sub { font-size: 10px; color: #6b7280; }
+    .item-price { text-align: right; font-weight: 600; color: #e5e7eb; }
+    .item-change { text-align: right; font-size: 10px; }
 
     /* Center Chart Viewport */
-    .chart-container { flex: 1; height: 100%; position: relative; }
-    #tv_chart { height: 100%; width: 100%; }
+    .chart-viewport {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      background: #0b0e14;
+      display: flex;
+      flex-direction: column;
+    }
 
-    /* Right AI Chat Sidebar */
-    .sidebar-right { width: 300px; background: #181c27; border-left: 1px solid #2a2e39; display: flex; flex-direction: column; }
-    .chat-box { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
-    .msg { padding: 8px 12px; border-radius: 6px; max-width: 85%; line-height: 1.4; word-break: break-word; }
-    .user-msg { background: #2962ff; color: white; align-self: flex-end; }
-    .ai-msg { background: #2a2e39; color: #d1d4dc; align-self: flex-start; }
-    
-    .chat-input-area { padding: 10px; border-top: 1px solid #2a2e39; display: flex; gap: 6px; }
-    .chat-input { flex: 1; background: #131722; border: 1px solid #2a2e39; color: white; padding: 8px; border-radius: 4px; outline: none; }
-    .send-btn { background: #00e676; border: none; color: black; font-weight: bold; padding: 0 12px; border-radius: 4px; cursor: pointer; }
-    .key-input { width: 90%; margin: 8px auto; padding: 6px; background: #131722; border: 1px solid #2a2e39; color: white; border-radius: 4px; font-size: 11px; }
+    #tv_chart_container {
+      flex: 1;
+      width: 100%;
+    }
+
+    /* Floating Bottom Dock Toolbar */
+    .bottom-dock {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(17, 21, 31, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid #232a3b;
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    .dock-btn {
+      color: #9ca3af;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .dock-btn:hover { color: #fff; }
+    .dock-divider { width: 1px; height: 14px; background: #2d3748; }
+
+    /* Right AI Sidebar Panel */
+    .sidebar-ai {
+      width: 310px;
+      background: #0f131c;
+      border-left: 1px solid #1a202c;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ai-header {
+      padding: 10px 12px;
+      border-bottom: 1px solid #1a202c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ai-context-tag {
+      background: #1a202c;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: #f59e0b;
+    }
+
+    .ai-chat-box {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-bubble {
+      padding: 10px 12px;
+      border-radius: 8px;
+      max-width: 90%;
+      line-height: 1.45;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .msg-ai {
+      background: #161b26;
+      color: #d1d5db;
+      border: 1px solid #202736;
+      align-self: flex-start;
+    }
+
+    .msg-user {
+      background: #2563eb;
+      color: #ffffff;
+      align-self: flex-end;
+    }
+
+    .quick-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .prompt-chip {
+      background: #1a202c;
+      border: 1px solid #2d3748;
+      color: #9ca3af;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .prompt-chip:hover {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    .ai-input-wrapper {
+      padding: 10px;
+      border-top: 1px solid #1a202c;
+      background: #0d1117;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .api-key-field {
+      background: #161b26;
+      border: 1px solid #202736;
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      outline: none;
+    }
+
+    .chat-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: #161b26;
+      border: 1px solid #202736;
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+    }
+    .chat-input:focus { border-color: #3b82f6; }
+
+    .send-btn {
+      background: #10b981;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      padding: 0 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .send-btn:hover { background: #34d399; }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <div class="topbar">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <span class="badge">PRO TERMINAL</span>
-      <strong id="current-symbol-title">XAUUSD / Gold</strong>
+  <!-- TOP HEADER NAVBAR -->
+  <div class="header-top">
+    <div class="brand-section">
+      <div class="brand-logo">Z</div>
+      <strong style="color: #fff; font-size: 13px;">ZpKingPro</strong>
+      <div class="plan-badge">
+        <span>Free plan</span>
+        <button class="upgrade-btn">UPGRADE</button>
+      </div>
     </div>
-    <div><span>Status: </span><strong style="color: #00e676;">Active</strong></div>
+
+    <!-- Ticker Metrics Bar -->
+    <div class="top-metrics">
+      <div class="metric-item">
+        <span class="metric-label">Crypto F&G</span>
+        <span class="metric-value text-yellow">31 - Fear</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Volatility</span>
+        <span class="metric-value text-green">Low</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">Regime</span>
+        <span class="metric-value text-yellow">Cautious</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">BTC 24h</span>
+        <span class="metric-value text-red">-0.89%</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">ETH 24h</span>
+        <span class="metric-value text-red">-0.48%</span>
+      </div>
+      <div class="signal-pill">
+        DESK SIGNAL: <span style="color:#fff;">XAUUSD BUY</span>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; color: #6b7280; font-size: 14px;">
+      <i class="fa-regular fa-bell" style="cursor: pointer;"></i>
+      <i class="fa-solid fa-gear" style="cursor: pointer;"></i>
+    </div>
   </div>
 
-  <!-- Main View -->
-  <div class="container">
+  <!-- SECONDARY TOOLBAR -->
+  <div class="toolbar-sub">
+    <div class="toolbar-left">
+      <i class="fa-solid fa-arrow-left" style="color:#6b7280; cursor:pointer;"></i>
+      <div class="symbol-pill">
+        <i class="fa-solid fa-chart-line" style="color: #eab308;"></i>
+        <span id="active-symbol-title">XAUUSD</span>
+        <span style="font-weight: normal; color: #6b7280; font-size: 10px;">OANDA</span>
+        <span class="text-green" id="active-symbol-price">4,124.45</span>
+      </div>
+
+      <!-- Timeframe selector buttons -->
+      <div style="display: flex; gap: 2px; margin-left: 8px;">
+        <button class="tf-btn active" onclick="changeTimeframe('1')">1m</button>
+        <button class="tf-btn" onclick="changeTimeframe('5')">5m</button>
+        <button class="tf-btn" onclick="changeTimeframe('15')">15m</button>
+        <button class="tf-btn" onclick="changeTimeframe('30')">30m</button>
+        <button class="tf-btn" onclick="changeTimeframe('60')">1h</button>
+        <button class="tf-btn" onclick="changeTimeframe('240')">4h</button>
+        <button class="tf-btn" onclick="changeTimeframe('D')">1d</button>
+      </div>
+
+      <div class="scan-status">
+        <i class="fa-solid fa-crosshairs"></i> Manual scan - Target Range
+      </div>
+    </div>
+
+    <div class="toolbar-right">
+      <button class="action-btn"><i class="fa-solid fa-robot" style="color:#eab308;"></i> Ask AI</button>
+      <button class="action-btn"><i class="fa-solid fa-arrow-trend-up" style="color:#10b981;"></i> Trade</button>
+      <button class="action-btn"><i class="fa-regular fa-bell"></i> Alert</button>
+    </div>
+  </div>
+
+  <!-- MAIN BODY LAYOUT -->
+  <div class="main-container">
     
-    <!-- Left Watchlist -->
-    <div class="sidebar-left">
-      <div class="sidebar-title">Watchlist</div>
-      <div class="watchlist-item" onclick="loadSymbol('OANDA:XAUUSD', 'XAUUSD / Gold')">
-        <div class="symbol-name">XAUUSD</div>
+    <!-- FAR LEFT ICON BAR -->
+    <div class="icon-sidebar">
+      <i class="fa-solid fa-terminal icon-btn active" title="Terminal"></i>
+      <i class="fa-solid fa-chart-simple icon-btn" title="Charts"></i>
+      <i class="fa-solid fa-bell icon-btn" title="Alerts"></i>
+      <i class="fa-solid fa-bolt icon-btn" title="Signals"></i>
+      <i class="fa-solid fa-sliders icon-btn" title="Settings"></i>
+    </div>
+
+    <!-- WATCHLIST SIDEBAR -->
+    <div class="sidebar-watchlist">
+      <div class="watchlist-header">
+        <span>Watchlist</span>
+        <i class="fa-solid fa-plus" style="cursor: pointer;"></i>
       </div>
-      <div class="watchlist-item" onclick="loadSymbol('BINANCE:BTCUSDT', 'BTCUSDT / Bitcoin')">
-        <div class="symbol-name">BTCUSDT</div>
-      </div>
-      <div class="watchlist-item" onclick="loadSymbol('BINANCE:ETHUSDT', 'ETHUSDT / Ethereum')">
-        <div class="symbol-name">ETHUSDT</div>
-      </div>
-      <div class="watchlist-item" onclick="loadSymbol('FX:EURUSD', 'EURUSD / Euro')">
-        <div class="symbol-name">EURUSD</div>
+      
+      <div class="watchlist-list">
+        <div class="watchlist-item active" onclick="loadSymbol('OANDA:XAUUSD', 'XAUUSD', 'Gold', '4,125.70', '-0.11%')">
+          <div>
+            <div class="item-symbol">XAUUSD</div>
+            <div class="item-sub">Gold</div>
+          </div>
+          <div>
+            <div class="item-price">4,125.70</div>
+            <div class="item-change text-red">-0.11%</div>
+          </div>
+        </div>
+
+        <div class="watchlist-item" onclick="loadSymbol('BINANCE:BTCUSDT', 'BTCUSDT', 'Bitcoin', '65,628', '-0.95%')">
+          <div>
+            <div class="item-symbol">BTCUSDT</div>
+            <div class="item-sub">Bitcoin</div>
+          </div>
+          <div>
+            <div class="item-price">65,628</div>
+            <div class="item-change text-red">-0.95%</div>
+          </div>
+        </div>
+
+        <div class="watchlist-item" onclick="loadSymbol('BINANCE:ETHUSDT', 'ETHUSDT', 'Ethereum', '1,919.85', '-0.58%')">
+          <div>
+            <div class="item-symbol">ETHUSDT</div>
+            <div class="item-sub">Ethereum</div>
+          </div>
+          <div>
+            <div class="item-price">1,919.85</div>
+            <div class="item-change text-red">-0.58%</div>
+          </div>
+        </div>
+
+        <div class="watchlist-item" onclick="loadSymbol('FX:EURUSD', 'EURUSD', 'Euro / USD', '1.1429', '+0.14%')">
+          <div>
+            <div class="item-symbol">EURUSD</div>
+            <div class="item-sub">Euro / USD</div>
+          </div>
+          <div>
+            <div class="item-price">1.1429</div>
+            <div class="item-change text-green">+0.14%</div>
+          </div>
+        </div>
+
+        <div class="watchlist-item" onclick="loadSymbol('FX:GBPUSD', 'GBPUSD', 'Pound / USD', '1.3389', '+0.09%')">
+          <div>
+            <div class="item-symbol">GBPUSD</div>
+            <div class="item-sub">Pound / USD</div>
+          </div>
+          <div>
+            <div class="item-price">1.3389</div>
+            <div class="item-change text-green">+0.09%</div>
+          </div>
+        </div>
+
+        <div class="watchlist-item" onclick="loadSymbol('CAPITALCOM:US100', 'NAS100', 'Nasdaq 100', '28,998', '+0.35%')">
+          <div>
+            <div class="item-symbol">NAS100</div>
+            <div class="item-sub">Nasdaq 100</div>
+          </div>
+          <div>
+            <div class="item-price">28,998</div>
+            <div class="item-change text-green">+0.35%</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Center Chart -->
-    <div class="chart-container" id="chart_box"></div>
+    <!-- CENTER CHART AREA -->
+    <div class="chart-viewport">
+      <div id="tv_chart_container"></div>
 
-    <!-- Right AI Panel -->
-    <div class="sidebar-right">
-      <div class="sidebar-title">AI Market Assistant</div>
-      <input type="password" id="api-key" class="key-input" placeholder="Paste Gemini API Key Here...">
-      
-      <div class="chat-box" id="chat-box">
-        <div class="msg ai-msg">Hello! I'm your Trading Assistant. Paste your API Key above and ask me anything about market strategy or levels.</div>
+      <!-- Floating Bottom Toolbar -->
+      <div class="bottom-dock">
+        <div class="dock-btn"><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis</div>
+        <div class="dock-btn"><i class="fa-solid fa-robot"></i> Bot</div>
+        <div class="dock-btn"><i class="fa-solid fa-clock-rotate-left"></i> History</div>
+        <div class="dock-btn"><i class="fa-regular fa-newspaper"></i> News</div>
+        <div class="dock-divider"></div>
+        <div class="dock-btn"><i class="fa-solid fa-bullseye"></i> Focus AI</div>
+        <div class="dock-btn"><i class="fa-solid fa-sliders"></i> Market</div>
+      </div>
+    </div>
+
+    <!-- RIGHT AI PANEL -->
+    <div class="sidebar-ai">
+      <div class="ai-header">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-comments" style="color: #eab308;"></i>
+          <strong style="color:#fff;">Chat</strong>
+        </div>
+        <div class="ai-context-tag">
+          CONTEXT <span id="ai-symbol-tag">XAUUSD</span> • <span id="ai-tf-tag">1m</span>
+        </div>
       </div>
 
-      <div class="chat-input-area">
-        <input type="text" id="user-input" class="chat-input" placeholder="Ask AI..." onkeydown="if(event.key==='Enter') sendAI()">
-        <button class="send-btn" onclick="sendAI()">Send</button>
+      <div class="ai-chat-box" id="ai-chat-box">
+        <div class="msg-bubble msg-ai">
+          Hey, I'm <strong>ZpKingPro AI</strong> — ask me anything about <span id="ai-welcome-symbol">XAUUSD</span> or market setup levels.
+          
+          <div class="quick-prompts">
+            <div class="prompt-chip" onclick="sendQuickPrompt('Analyze this chart structure')">Analyze this chart</div>
+            <div class="prompt-chip" onclick="sendQuickPrompt('What are the best setups now?')">Best setups now</div>
+            <div class="prompt-chip" onclick="sendQuickPrompt('Provide market outlook')">Market outlook</div>
+            <div class="prompt-chip" onclick="sendQuickPrompt('Perform a risk check')">Risk check</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-input-wrapper">
+        <input type="password" id="api-key" class="api-key-field" placeholder="Paste Gemini API Key Here...">
+        <div class="chat-controls">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Analyze market, deploy bot..." onkeydown="if(event.key==='Enter') handleSend()">
+          <button class="send-btn" onclick="handleSend()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
       </div>
     </div>
 
   </div>
 
-  <!-- TradingView Engine -->
+  <!-- TRADINGVIEW WIDGET SCRIPT -->
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script type="text/javascript">
-    let currentSymbol = "XAUUSD";
+    let currentTradingViewSymbol = "OANDA:XAUUSD";
+    let currentSymbolName = "XAUUSD";
+    let currentTimeframe = "1";
 
-    function loadSymbol(symbolName, title) {
-      currentSymbol = symbolName;
-      document.getElementById('current-symbol-title').innerText = title;
-      document.getElementById('chart_box').innerHTML = '<div id="tv_chart"></div>';
+    function renderChart() {
+      document.getElementById('tv_chart_container').innerHTML = '';
       new TradingView.widget({
         "autosize": true,
-        "symbol": symbolName,
-        "interval": "15",
+        "symbol": currentTradingViewSymbol,
+        "interval": currentTimeframe,
         "timezone": "Etc/UTC",
         "theme": "dark",
         "style": "1",
-        "container_id": "tv_chart",
-        "hide_side_toolbar": false
+        "locale": "en",
+        "toolbar_bg": "#0b0e14",
+        "enable_publishing": false,
+        "hide_side_toolbar": false,
+        "allow_symbol_change": true,
+        "container_id": "tv_chart_container"
       });
     }
 
-    // Default Load
-    loadSymbol('OANDA:XAUUSD', 'XAUUSD / Gold');
+    function loadSymbol(tvSymbol, symbolTitle, name, price, change) {
+      currentTradingViewSymbol = tvSymbol;
+      currentSymbolName = symbolTitle;
+      
+      document.getElementById('active-symbol-title').innerText = symbolTitle;
+      document.getElementById('active-symbol-price').innerText = price;
+      document.getElementById('ai-symbol-tag').innerText = symbolTitle;
+      document.getElementById('ai-welcome-symbol').innerText = symbolTitle;
 
-    // AI Query Engine
-    async function sendAI() {
+      renderChart();
+    }
+
+    function changeTimeframe(tf) {
+      currentTimeframe = tf;
+      document.getElementById('ai-tf-tag').innerText = tf + (tf === 'D' ? '' : 'm');
+      
+      // Update Active UI Button State
+      const buttons = document.querySelectorAll('.tf-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      renderChart();
+    }
+
+    // Initial Load
+    renderChart();
+
+    // AI Messaging System
+    function sendQuickPrompt(promptText) {
+      document.getElementById('chat-input').value = promptText;
+      handleSend();
+    }
+
+    async function handleSend() {
       const apiKey = document.getElementById('api-key').value.trim();
-      const inputEl = document.getElementById('user-input');
-      const chatBox = document.getElementById('chat-box');
-      const text = inputEl.value.trim();
+      const inputEl = document.getElementById('chat-input');
+      const chatBox = document.getElementById('ai-chat-box');
+      const userText = inputEl.value.trim();
 
-      if (!text) return;
+      if (!userText) return;
       if (!apiKey) {
-        alert("Please paste your Google Gemini API Key first!");
+        alert("Please paste your Google Gemini API key to run ZpKingPro AI.");
         return;
       }
 
       // Add user message
-      chatBox.innerHTML += `<div class="msg user-msg">${text}</div>`;
+      chatBox.innerHTML += `<div class="msg-bubble msg-user">${userText}</div>`;
       inputEl.value = '';
       chatBox.scrollTop = chatBox.scrollHeight;
 
       // Add loading indicator
       const loadingId = 'load-' + Date.now();
-      chatBox.innerHTML += `<div class="msg ai-msg" id="${loadingId}">Analyzing market...</div>`;
+      chatBox.innerHTML += `<div class="msg-bubble msg-ai" id="${loadingId}"><i class="fa-solid fa-spinner fa-spin"></i> ZpKingPro AI is processing ${currentSymbolName}...</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
@@ -143,16 +699,16 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{
-              parts: [{ text: `You are an expert ICT/SMC trading assistant. The user is currently looking at chart: ${currentSymbol}. User question: ${text}` }]
+              parts: [{ text: `You are ZpKingPro AI, an expert ICT/SMC trading terminal assistant. The user is currently viewing ${currentSymbolName} on a ${currentTimeframe} timeframe. User Query: ${userText}` }]
             }]
           })
         });
 
         const data = await response.json();
-        const reply = data.candidates[0].content.parts[0].text;
-        document.getElementById(loadingId).innerText = reply;
+        const replyText = data.candidates[0].content.parts[0].text;
+        document.getElementById(loadingId).innerText = replyText;
       } catch (err) {
-        document.getElementById(loadingId).innerText = "Error fetching response. Check your API key.";
+        document.getElementById(loadingId).innerText = "Failed to connect. Please check your Gemini API Key.";
       }
 
       chatBox.scrollTop = chatBox.scrollHeight;
