@@ -656,7 +656,9 @@
       
       const buttons = document.querySelectorAll('.tf-btn');
       buttons.forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
 
       renderChart();
     }
@@ -692,27 +694,39 @@
       chatBox.innerHTML += `<div class="msg-bubble msg-ai" id="${loadingId}"><i class="fa-solid fa-spinner fa-spin"></i> ZpKingPro AI is processing ${currentSymbolName}...</div>`;
       chatBox.scrollTop = chatBox.scrollHeight;
 
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [{ text: `You are ZpKingPro AI, an expert ICT/SMC trading terminal assistant. The user is currently viewing ${currentSymbolName} on a ${currentTimeframe} timeframe. User Query: ${userText}` }]
-            }]
-          })
-        });
+      // Candidate models for auto-fallback
+      const modelCandidates = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash-latest'];
+      let success = false;
+      let lastErrorMessage = '';
 
-        const data = await response.json();
+      for (const model of modelCandidates) {
+        try {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{ text: `You are ZpKingPro AI, an expert ICT/SMC trading terminal assistant. The user is currently viewing ${currentSymbolName} on a ${currentTimeframe} timeframe. User Query: ${userText}` }]
+              }]
+            })
+          });
 
-        if (!response.ok) {
-          throw new Error(data.error?.message || `API Error (${response.status})`);
+          const data = await response.json();
+
+          if (response.ok && data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+            document.getElementById(loadingId).innerText = data.candidates[0].content.parts[0].text;
+            success = true;
+            break;
+          } else {
+            lastErrorMessage = data.error?.message || `Status ${response.status} on ${model}`;
+          }
+        } catch (err) {
+          lastErrorMessage = err.message;
         }
+      }
 
-        const replyText = data.candidates[0].content.parts[0].text;
-        document.getElementById(loadingId).innerText = replyText;
-      } catch (err) {
-        document.getElementById(loadingId).innerText = `Error: ${err.message}`;
+      if (!success) {
+        document.getElementById(loadingId).innerText = `Error: ${lastErrorMessage}`;
       }
 
       chatBox.scrollTop = chatBox.scrollHeight;
